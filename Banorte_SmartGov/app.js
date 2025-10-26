@@ -747,24 +747,58 @@ function renderViewForRole(role, view){
       new Chart(ctx, {type:'line', data:{labels:['Ene','Feb','Mar','Abr','May','Jun'], datasets:[{label:'Gasto',data:[50,70,60,80,90,75]}]}, options:{plugins:{legend:{display:false}}}});
     },50);
   } else if(view === 'budget'){
+    // Gestión de presupuestos y distribución persistente por dependencia
+    let budgets = {};
+    let distribs = {};
+    try { budgets = JSON.parse(localStorage.getItem('budgets')||'{}'); } catch(e) { budgets = {}; }
+    try { distribs = JSON.parse(localStorage.getItem('distribs')||'{}'); } catch(e) { distribs = {}; }
+    const currentBudget = budgets[role] || d.budget || '-';
+    const defaultDistrib = [45,35,20];
+    const currentDistrib = (distribs[role] && Array.isArray(distribs[role]) && distribs[role].length===3) ? distribs[role] : defaultDistrib;
     main.innerHTML = `
       <h3>Gestión de presupuesto - ${capitalize(role)}</h3>
       <p class="small">Asignaciones y transferencias internas</p>
       <div style="margin-top:12px" class="card">
-        <strong>Presupuesto asignado:</strong> ${d.budget || '-'}<br/>
+        <strong>Presupuesto asignado:</strong> <span id="budgetValue">${currentBudget}</span><br/>
         <strong>Gasto acumulado:</strong> ${d.spent || '-'}<br/>
-        <div style="margin-top:12px"><button class="btn-primary" id="assignBtn">Asignar presupuesto</button></div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="btn-primary" id="assignBtn">Asignar/Cambiar presupuesto</button>
+          <button class="btn-secondary" id="editDistribBtn">Editar distribución</button>
+        </div>
       </div>
       <div style="margin-top:12px" class="card">
         <h4>Distribución por área</h4>
+        <ul id="distribList" style="margin:0 0 10px 0;padding:0;list-style:none;display:flex;gap:18px">
+          <li>Operación: <b>${currentDistrib[0]}%</b></li>
+          <li>Inversión: <b>${currentDistrib[1]}%</b></li>
+          <li>Mantenimiento: <b>${currentDistrib[2]}%</b></li>
+        </ul>
         <canvas id="chartBudget" height="120"></canvas>
       </div>
     `;
     setTimeout(()=>{
       const ctx = document.getElementById('chartBudget').getContext('2d');
-      new Chart(ctx, {type:'doughnut', data:{labels:['Operación','Inversión','Mantenimiento'], datasets:[{data:[45,35,20]}]}, options:{plugins:{legend:{position:'bottom'}}}});
+      new Chart(ctx, {type:'doughnut', data:{labels:['Operación','Inversión','Mantenimiento'], datasets:[{data:currentDistrib}]}, options:{plugins:{legend:{position:'bottom'}}}});
     },50);
-    document.getElementById('assignBtn').addEventListener('click', ()=> alert('Presupuesto asignado con éxito'));
+    document.getElementById('assignBtn').addEventListener('click', ()=> {
+      let newBudget = prompt('Ingresa el nuevo presupuesto asignado para ' + capitalize(role) + ' (ejemplo: $5,000,000):', currentBudget);
+      if(newBudget && newBudget.trim() !== ''){
+        budgets[role] = newBudget.trim();
+        localStorage.setItem('budgets', JSON.stringify(budgets));
+        document.getElementById('budgetValue').textContent = newBudget.trim();
+        alert('Presupuesto actualizado para ' + capitalize(role));
+      }
+    });
+    document.getElementById('editDistribBtn').addEventListener('click', ()=> {
+      let op = prompt('Porcentaje para Operación:', currentDistrib[0]);
+      let inv = prompt('Porcentaje para Inversión:', currentDistrib[1]);
+      let mant = prompt('Porcentaje para Mantenimiento:', currentDistrib[2]);
+      op = parseInt(op)||0; inv = parseInt(inv)||0; mant = parseInt(mant)||0;
+      if(op+inv+mant!==100){ alert('La suma debe ser 100%'); return; }
+      distribs[role] = [op,inv,mant];
+      localStorage.setItem('distribs', JSON.stringify(distribs));
+      renderViewForRole(role,'budget');
+    });
   } else if(view === 'payments'){
     main.innerHTML = `
       <h3>Pagos y Recaudación - ${capitalize(role)}</h3>
@@ -795,6 +829,14 @@ function renderViewForRole(role, view){
       </div>
     `;
   } else if(view === 'reports'){
+    // Obtener presupuesto y distribución actual
+    let budgets = {};
+    let distribs = {};
+    try { budgets = JSON.parse(localStorage.getItem('budgets')||'{}'); } catch(e) { budgets = {}; }
+    try { distribs = JSON.parse(localStorage.getItem('distribs')||'{}'); } catch(e) { distribs = {}; }
+    const currentBudget = budgets[role] || d.budget || '-';
+    const defaultDistrib = [45,35,20];
+    const currentDistrib = (distribs[role] && Array.isArray(distribs[role]) && distribs[role].length===3) ? distribs[role] : defaultDistrib;
     main.innerHTML = `
       <h3>Reportes - ${capitalize(role)}</h3>
       <p class="small">Exportar y ver reportes</p>
@@ -802,7 +844,68 @@ function renderViewForRole(role, view){
         <button class="btn-primary" id="exportBtn">Generar reporte PDF</button>
       </div>
     `;
-    document.getElementById('exportBtn').addEventListener('click', ()=> alert('Reporte generado con éxito'));
+    document.getElementById('exportBtn').addEventListener('click', async ()=> {
+      // Generar PDF profesional con jsPDF, logo grande, header rojo, tabla de distribución
+      const { jsPDF } = window.jspdf || {};
+      if (!jsPDF) { alert('jsPDF no está disponible'); return; }
+      const doc = new jsPDF();
+      // Header rojo y logo grande
+      doc.setFillColor(235,0,41);
+      doc.rect(0,0,210,40,'F');
+      try {
+        const dataUrl = await loadImageDataURL('Logo.png');
+        doc.addImage(dataUrl, 'PNG', 160, 7, 35, 25);
+      } catch (e) {}
+      doc.setFontSize(22);
+      doc.setTextColor(255,255,255);
+      doc.text('Reporte Oficial de Dependencia', 16, 20);
+      doc.setFontSize(13);
+      doc.text('Banorte SmartGov', 16, 32);
+      // Cuerpo
+      let y = 50;
+      doc.setFontSize(12);
+      doc.setTextColor(50,62,72);
+      doc.text('Dependencia:', 20, y);
+      doc.text(capitalize(role), 70, y);
+      y += 10;
+      doc.text('Presupuesto asignado:', 20, y);
+      doc.text(currentBudget, 70, y);
+      y += 10;
+      doc.text('Gasto acumulado:', 20, y);
+      doc.text(d.spent || '-', 70, y);
+      y += 10;
+      doc.text('Fecha de generación:', 20, y);
+      doc.text(new Date().toLocaleString(), 70, y);
+      y += 16;
+      // Tabla de distribución
+      doc.setFontSize(13);
+      doc.setFillColor(245,245,245);
+      doc.rect(20,y-6,170,10,'F');
+      doc.setTextColor(50,62,72);
+      doc.text('Área', 30, y);
+      doc.text('Porcentaje', 80, y);
+      doc.text('Monto estimado', 130, y);
+      y += 8;
+      const areas = ['Operación','Inversión','Mantenimiento'];
+      for(let i=0;i<3;i++){
+        doc.text(areas[i], 30, y);
+        doc.text(currentDistrib[i]+'%', 80, y);
+        // Calcular monto estimado por área si posible
+        let monto = '-';
+        if(typeof currentBudget === 'string' && currentBudget[0]==='$'){
+          let num = parseFloat(currentBudget.replace(/[^0-9.]/g,''));
+          if(!isNaN(num)) monto = '$'+(num*currentDistrib[i]/100).toLocaleString('es-MX',{minimumFractionDigits:2});
+        }
+        doc.text(monto, 130, y);
+        y += 8;
+      }
+      y += 8;
+      doc.setFontSize(10);
+      doc.setTextColor(150,150,150);
+      doc.text('Documento oficial generado por Banorte SmartGov', 105, 285, {align:'center'});
+      const filename = `reporte_${role}_${new Date().toISOString().slice(0,10)}.pdf`;
+      doc.save(filename);
+    });
   } else if(view === 'transparency'){
     main.innerHTML = `
       <h3>Transparencia - ${capitalize(role)}</h3>
