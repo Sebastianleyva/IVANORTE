@@ -173,8 +173,14 @@ function renderCitizenDashboard(){
 
   document.getElementById('logout').addEventListener('click', ()=>{ localStorage.removeItem('role'); renderLogin(); });
   document.getElementById('backAdmin').addEventListener('click', ()=>{
-    const role = localStorage.getItem('role') || 'ciudadano';
-    if(role && role !== 'ciudadano') renderDashboard(role); else renderLogin();
+    // Cambiado: volver a la pestaña 'Mi cuenta' dentro del dashboard ciudadano
+    renderCitizenView('account');
+    // Asegurar que el menú lateral marque 'Mi cuenta' como activo
+    try{
+      document.querySelectorAll('#menuCitizen li').forEach(x=>x.classList.remove('active'));
+      const li = document.querySelector('#menuCitizen li[data-view="account"]');
+      if(li) li.classList.add('active');
+    }catch(e){ /* si no existe el menu no hacer nada */ }
   });
 
   document.querySelectorAll('#menuCitizen li').forEach(li=>{
@@ -310,9 +316,9 @@ function renderCitizenView(view){
       // store payment
       const payments = JSON.parse(localStorage.getItem('payments')||'[]');
       const p = {service, ref, amount, method, date: new Date().toLocaleString()};
-      payments.unshift(p);
-      localStorage.setItem('payments', JSON.stringify(payments));
-      document.getElementById('payMsg').style.display='block'; document.getElementById('payMsg').textContent='Pago simulado realizado con éxito';
+  payments.unshift(p);
+  localStorage.setItem('payments', JSON.stringify(payments));
+  document.getElementById('payMsg').style.display='block'; document.getElementById('payMsg').textContent='Pago realizado con éxito';
       document.getElementById('downloadReceipt').style.display='block';
       // show receipt on click
       document.getElementById('downloadReceipt').addEventListener('click', ()=>{
@@ -425,7 +431,7 @@ function renderViewForRole(role, view){
       const ctx = document.getElementById('chartBudget').getContext('2d');
       new Chart(ctx, {type:'doughnut', data:{labels:['Operación','Inversión','Mantenimiento'], datasets:[{data:[45,35,20]}]}, options:{plugins:{legend:{position:'bottom'}}}});
     },50);
-    document.getElementById('assignBtn').addEventListener('click', ()=> alert('Asignar presupuesto (simulado)'));
+  document.getElementById('assignBtn').addEventListener('click', ()=> alert('Presupuesto asignado con éxito'));
   } else if(view === 'payments'){
     main.innerHTML = `
       <h3>Pagos y Recaudación - ${capitalize(role)}</h3>
@@ -434,7 +440,7 @@ function renderViewForRole(role, view){
         <table class="table">
           <thead><tr><th>Proveedor</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead>
           <tbody>
-            <tr><td>Proveedor A</td><td>$120,000</td><td>Pendiente</td><td><button class="btn-primary" onclick="alert('Pago simulado')">Pagar</button></td></tr>
+            <tr><td>Proveedor A</td><td>$120,000</td><td>Pendiente</td><td><button class="btn-primary" onclick="alert('Pago realizado con éxito')">Pagar</button></td></tr>
             <tr><td>Proveedor B</td><td>$80,000</td><td>Completado</td><td>—</td></tr>
           </tbody>
         </table>
@@ -460,10 +466,10 @@ function renderViewForRole(role, view){
       <h3>Reportes - ${capitalize(role)}</h3>
       <p class="small">Exportar y ver reportes</p>
       <div style="margin-top:12px" class="card">
-        <button class="btn-primary" id="exportBtn">Generar reporte PDF (simulado)</button>
+        <button class="btn-primary" id="exportBtn">Generar reporte PDF</button>
       </div>
     `;
-    document.getElementById('exportBtn').addEventListener('click', ()=> alert('Generando PDF (simulado)'));
+    document.getElementById('exportBtn').addEventListener('click', ()=> alert('Reporte generado con éxito'));
   } else if(view === 'transparency'){
     main.innerHTML = `
       <h3>Transparencia - ${capitalize(role)}</h3>
