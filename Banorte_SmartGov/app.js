@@ -682,6 +682,10 @@ function renderDashboard(role){
     </div>
   `);
 
+  // Inicialización global para dependencias (helpers y gráficas)
+  try { updateDebtAmounts(); } catch(e){}
+  try { buildCitizenChart(); } catch(e){}
+
   document.getElementById('logout').addEventListener('click', ()=>{ localStorage.removeItem('role'); renderLogin(); });
   document.getElementById('goCitizen').addEventListener('click', ()=> renderCitizenDashboard());
 
@@ -742,10 +746,20 @@ function renderViewForRole(role, view){
         </table>
       </div>
     `;
-    setTimeout(()=>{
-      const ctx = document.getElementById('chartRole').getContext('2d');
+    function tryInitChartRole(attempts=0) {
+      const canvas = document.getElementById('chartRole');
+      if (!canvas) {
+        if (attempts < 5) setTimeout(()=>tryInitChartRole(attempts+1), 100);
+        return;
+      }
+      if (typeof Chart === 'undefined') {
+        canvas.outerHTML = '<div style="color:red">Error: Chart.js no está disponible</div>';
+        return;
+      }
+      const ctx = canvas.getContext('2d');
       new Chart(ctx, {type:'line', data:{labels:['Ene','Feb','Mar','Abr','May','Jun'], datasets:[{label:'Gasto',data:[50,70,60,80,90,75]}]}, options:{plugins:{legend:{display:false}}}});
-    },50);
+    }
+    setTimeout(tryInitChartRole, 50);
   } else if(view === 'budget'){
     // Gestión de presupuestos y distribución persistente por dependencia
     let budgets = {};
@@ -763,7 +777,7 @@ function renderViewForRole(role, view){
         <strong>Gasto acumulado:</strong> ${d.spent || '-'}<br/>
         <div style="margin-top:12px;display:flex;gap:8px">
           <button class="btn-primary" id="assignBtn">Asignar/Cambiar presupuesto</button>
-          <button class="btn-secondary" id="editDistribBtn">Editar distribución</button>
+          <button class="btn-primary" id="editDistribBtn">Editar distribución</button>
         </div>
       </div>
       <div style="margin-top:12px" class="card">
