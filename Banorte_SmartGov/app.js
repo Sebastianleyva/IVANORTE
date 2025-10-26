@@ -86,10 +86,10 @@ function renderDashboard(role){
   setHTML(`
     <div class="container">
       <div class="header card">
-        <div class="brand">
+          <div class="brand">
           <div class="logo">B</div>
           <div>
-            <div class="h1">Banorte SmartGov</div>
+            <div class="h1"><img src="logo.png" style="height:20px;object-fit:contain"></div>
             <div class="small">Módulo: ${role.toUpperCase()}</div>
           </div>
         </div>
@@ -141,10 +141,10 @@ function renderCitizenDashboard(){
   setHTML(`
     <div class="container">
       <div class="header card">
-        <div class="brand">
+          <div class="brand">
           <div class="logo">B</div>
           <div>
-            <div class="h1">Banorte SmartGov - Ciudadano</div>
+            <div class="h1"><img src="logo.png" style="height:20px;object-fit:contain"></div>
             <div class="small">Paga tus servicios y consulta tu historial</div>
           </div>
         </div>
