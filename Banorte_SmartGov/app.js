@@ -36,7 +36,6 @@ function renderLogin(){
           </div>
           <button class="btn-primary" type="submit">Iniciar sesión</button>
           <div id="error" class="error" style="display:none"></div>
-          <p class="small text-center" style="margin-top:12px">prueba de log in</p>
         </form>
       </div>
     </div>
