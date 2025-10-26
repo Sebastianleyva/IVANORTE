@@ -1,0 +1,215 @@
+:root{
+  --banorte-red:#EB0029;
+  --banorte-red-hover:#DB0026;
+  --gray-dark:#323E48;
+  --gray-medium:#5B6670;
+  --bg:#F6F6F6;
+  --disabled:#CFD2D3;
+  --white:#FFFFFF;
+  --card-radius:12px;
+  --input-radius:5px;
+  --shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background:var(--bg);
+  color:var(--gray-dark);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.container{max-width:1200px;margin:28px auto;padding:20px}
+
+.card{background:#fff;
+  border-radius:var(--card-radius);
+  padding:18px;
+  box-shadow:var(--shadow)}
+
+.header{display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px}
+
+.brand{display:flex;
+  align-items:center;
+  gap:12px}
+
+.logo{width:0px;
+  height:46px;
+  border-radius:8px;
+  background:var(--banorte-red);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:700;
+  font-size:18px}
+
+.h1{font-size:20px;
+  margin:0;
+  color:var(--gray-dark)}
+
+  .logout-btn-citi{ display: none;
+    border:1px solid #eee;
+    padding:8px 12px;
+    border-radius:8px;
+    color:var(--gray-dark);
+    cursor:pointer;
+    margin-bottom:8px}
+
+  .logout-btn{ background:transparent;
+    border:1px solid #eee;
+    padding:8px 12px;
+    border-radius:8px;
+    color:var(--gray-dark);
+    cursor:pointer}
+
+.grid-3{display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-top:18px}
+
+.kpi{border-radius:12px;
+  padding:14px}
+
+.kpi h4{margin:0;
+  color:var(--gray-medium);
+  font-weight:600;
+  font-size:13px}
+
+.kpi p{margin:8px 0 0;
+  font-size:20px;
+  color:var(--gray-dark);
+  font-weight:700}
+
+.login-wrap{height:calc(100vh - 40px);
+  display:flex;
+  align-items:center;
+  justify-content:center}
+
+  .login-card{width:800px;
+    padding:28px;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:var(--shadow)}
+
+.form-group{margin-bottom:14px}
+
+.input{width:100%;
+  padding:10px 12px;
+  border-radius:var(--input-radius);
+  border:1px solid var(--disabled);
+  background:var(--bg);
+  color:var(--gray-medium);
+  font-size:15px}
+  
+.input:focus{outline:2px solid var(--banorte-red); 
+  background:#fff}
+
+.btn-primary{width:100%;
+  padding:11px 14px;
+  border-radius:8px;
+  border:none;
+  background:var(--banorte-red);
+  color:var(--white);
+  font-weight:600;
+  cursor:pointer}
+
+.btn-primary:hover{background:var(--banorte-red-hover)}
+
+.text-center{text-align:center}
+
+.error{color:var(--banorte-red);
+  font-size:14px;
+  margin-top:8px}
+
+.layout{display:flex;
+  gap:20px;
+  margin-top:16px}
+
+.sidebar{width:240px}
+
+.menu{list-style:none;
+  padding:12px;
+  margin:0;
+  background:transparent;
+  border-radius:8px}
+
+.menu li{padding:10px 12px;
+  border-radius:10px;
+  color:var(--gray-dark);
+  cursor:pointer;
+  margin-bottom:6px}
+
+.menu li.active{background:#fff;
+  border-left:4px solid var(--banorte-red);
+  font-weight:600}
+
+.content{flex:1}
+
+.table{width:100%;
+  border-collapse:collapse;
+  margin-top:12px}
+
+.table th,.table td{padding:10px;
+  border-bottom:1px solid #eee;
+  text-align:left}
+
+.small{font-size:13px;
+  color:var(--gray-medium)}
+
+/* citizen payment */
+.pay-card{display:flex;
+  gap:18px;
+  align-items:flex-start}
+
+.pay-form{flex:1}
+
+.pay-summary{width:300px}
+
+.pay-methods{display:flex;
+  gap:8px;
+  margin-bottom:10px}
+
+.pay-method{padding:8px 10px;
+  border-radius:8px;
+  border:1px solid var(--disabled);
+  cursor:pointer}
+
+.pay-method.active{border-color:var(--banorte-red);
+  background:#fff}
+
+.qr-box{width:100%;
+  height:200px;
+  border-radius:8px;
+  display:flex;align-items:center;
+  justify-content:center;
+  border:2px dashed var(--disabled);
+  color:var(--gray-medium);
+  font-weight:600}
+
+.footer{margin-top:18px;
+  color:var(--gray-medium);
+  font-size:13px;
+  text-align:center}
+
+/* responsive */
+@media (max-width:900px){.grid-3{grid-template-columns:1fr}.sidebar{display:none}.pay-card{flex-direction:column}.pay-summary{width:100%}}
+
+/* Eye icon for password show/hide */
+.form-group{position:relative}
+.eye-icon{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  user-select:none;
+  width:22px;
+  height:22px;
+  object-fit:contain;
+  filter:grayscale(80%);
+}
+.eye-icon:hover{filter:none}
+
