@@ -1,7 +1,7 @@
 Banorte SmartGov — Prototype (Static SPA)
 Prototipo estático de un panel financiero municipal y flujo de pagos ciudadanos. Es una SPA ligera para prototipado UI/UX — sin backend ni procesamiento real de pagos. No es seguro para producción.
 
-Resumen
+    
 Interfaz para roles de dependencia (agua, energía, transporte, obras, tesorería, transparencia).
 Vista de ciudadano para pagar servicios y ver historial (simulado).
 Gráficas con Chart.js, almacenamiento simulado en localStorage.
